@@ -1,4 +1,4 @@
 [debug] "not up to date. inChanged = true, force = false
-[debug] Updating ProjectRef(uri("file:/root/IdeaProjects/scalapractice/"), "root")...
-[debug] Done updating ProjectRef(uri("file:/root/IdeaProjects/scalapractice/"), "root")
+[debug] Updating ProjectRef(uri("file:/home/rithwick/Documents/IdeaProjects/scalapractice/"), "root")...
+[debug] Done updating ProjectRef(uri("file:/home/rithwick/Documents/IdeaProjects/scalapractice/"), "root")
 [warn] There may be incompatibilities among your library dependencies; run 'evicted' to see detailed eviction warnings.
