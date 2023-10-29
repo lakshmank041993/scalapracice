@@ -1,0 +1,39 @@
+- repartition and coalesce
+- when I want to reduce the number of partition use coalesce
+
+consider I have a 1 gb file and i create a rdd on top of it,
+and we have 8 partitions for the file and a 4 cluster node
+on each machine there will be 2 partitions
+
+rdd.coalesce(2)  => coalesce will try to do less/avoid shuffling since it will try to create partition in the same machine
+repartition will create full shuffle
+
+i have a file aboriginal.txt
+
+// we create rdd for longtext file
+
+val rdd1 = sc.textFile("bigLog4.txt")
+// check how many partitions are present
+
+rdd1.getNumPartitions
+
+// repartition
+
+val rdd2 = rdd1.repartition(6)
+
+// action
+
+rdd2.count   //>> shuffle happens
+
+
+// coalesce
+
+val rdd3 = rdd1.coalesce(6)
+
+rdd3.count   // >> shuffle doesn't happen
+
+when we are using coalesce the resultent may be of unequal size
+
+when we are using repartition full shuffling is involved its is time-consuming , the resultant is of equal size
+
+

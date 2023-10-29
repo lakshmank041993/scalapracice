@@ -1,0 +1,74 @@
+// creating spark session
+
+spark2-shell --conf spark.dynamicAllocation.enabled=false --master yarn --num-executors 21
+
+// create dataframe for customer table
+
+val customerDf = spark.read.format("csv").option("header","true").option("inferSchema","true").option("path","customers-201025-223502.csv").load
+
+// create dataframe for order.csv
+
+val ordersDf = spark.read.format("csv").option("header","true").option("inferSchema","true").option("path","ordersNew.csv").load
+
+// set spark conf to set the broadcastjoin default to false
+spark.conf.set("spark.sql.autoBroadcastJoinThreshold",-1)
+
+// join two df
+
+val joinDF = customerDf.join(ordersDf,customerDf("customer_id")===ordersDf("order_customer_id"))
+
+// write to folder
+
+joinDF.write.csv("joinedDF1")
+
+
+// shuffle in df creates 200 partitions by default
+
+
+
+// with optimization
+
+// create sctruct type
+
+
+import org.apache.spark.sql.types._
+var orderSchema =StructType(
+    List(
+      StructField("order_id",IntegerType,true),
+      StructField("order_date",DateType,true),
+      StructField("order_customer_id",IntegerType,true),
+      StructField("order_status",StringType,true)
+    )
+  )
+
+// load order file to data frame
+
+val ordersDf = spark.read.format("csv").option("header","true").schema(orderSchema).option("path","ordersNew.csv").load
+
+val customerDf = spark.read.format("csv").option("header","true").option("inferSchema","true").option("path","customers-201025-223502.csv").load
+
+// join the rdd
+
+val joinedDf = customerDf.join(ordersDf,customerDf("customer_id")===ordersDf("order_customer_id"))
+
+joinedDf.write.csv("joinedDf_broadcastjoin")
+
+
+
+// load 100000 records
+
+
+joineddf.take(1000000)
+
+
+
+// to increase driver memory
+
+spark2-shell --conf spark.dynamicAllocation.enabled=false --master yarn --num-executors 21 --driver-memory 4G
+
+parameters used
+
+--num-executors
+--driver-memory
+--executor-memory
+--executor-cores

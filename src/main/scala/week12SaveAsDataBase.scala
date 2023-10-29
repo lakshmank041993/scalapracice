@@ -9,7 +9,7 @@ object week12SaveAsDataBase extends App{
   myConf.set("spark.master","local[*]")
 
   // spark session
-  val spark = SparkSession.builder.config(myConf).enableHiveSupport().getOrCreate()
+  val spark = SparkSession.builder.config(myConf).config("spark.sql.catalogImplementation", "in-memory").getOrCreate()
 
   // load file
 
@@ -22,7 +22,10 @@ object week12SaveAsDataBase extends App{
   spark.sql("CREATE DATABASE IF NOT EXISTS retail")
 
   // write as data base
-  csvLoad.write.format("csv").mode(SaveMode.Overwrite).saveAsTable("retail.orders")
+  csvLoad.write
+    .format("csv")
+    .mode(SaveMode.Overwrite)
+    .saveAsTable("order5")
 
   //list all the tables in database
   spark.catalog.listTables("retail").show

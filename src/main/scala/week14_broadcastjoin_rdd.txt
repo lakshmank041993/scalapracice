@@ -1,0 +1,40 @@
+spark2-shell --conf spark.dynamicAllocation.enabled=false --num-executors 6 --executor-cores 2 --executor-memory 3G --conf spark.ui.port=4050
+
+//load the file
+val rdd1 = sc.textFile("bigLogNew.txt")
+
+//check the number of partitions size/ 128 gb
+rdd1.getNumPartitions
+
+// oput
+
+// ERROR,time
+val rdd2 = rdd1.map(x => (x.split(":")(0),x.split(":")(1)))
+
+//rdd 2 will have pair rdd
+(ERROR,0)
+(WARN,1)
+
+val rdd3 = Array(("ERROR",0),("WARN",1))
+
+// convert to rdd
+
+val rdd4 = sc.parallelize(a)
+
+val rdd5 = rdd2.join(rdd4)
+
+rdd5.saveAsTextFile("join_results_one")
+
+
+//-----------------------------------------------------
+broadcast join
+
+val rdd4 = Array(("ERROR",0),("WARN",1))
+val keymap = rdd4.toMap
+val bcast = sc.broadcast(keymap)
+val rdd1 = sc.textFile("bigLogNew.txt")
+val rdd2 = rdd1.map(x => (x.split(":")(0),x.split(":")(1)))
+val rdd3 = rdd2.map(x => (x._1,x._2,bcast.value(x._1)))
+rdd3.saveAsTextFile("join_results_one1")
+
+

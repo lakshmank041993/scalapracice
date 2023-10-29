@@ -1,0 +1,18 @@
+spark-submit using
+submitting job with jar using
+a, client mode
+b, cluster mode
+
+
+1 write your code in ide like eclipse/intellij
+2 bundle your code as a java jar file and export to jar
+3. move this jar to driver machine or edge node /gateway node
+
+move the jar to edge node  using scp
+
+scp /home/rithwick/Documents/IdeaProjects/scalapractice/out/artifacts/scalapractice_jar/scalapractice.jar itv009677@g02.itversity.com:/home/itv009677
+
+now we will the submit the jar
+
+spark2-submit --class week14_salting --master yarn --deploy-mode cluster --executor-memory 4G --num-executors 4 scalapractice.jar bigLogNew.txt
+

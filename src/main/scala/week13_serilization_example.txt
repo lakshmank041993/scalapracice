@@ -1,0 +1,49 @@
+spark2-shell --master yarn
+
+val rdd1 = sc.textFile("biglogtxtnewlatest1.txt")
+val rdd2 = rdd1.map(x => (x.split(":")(0),x.split(":")(1)))
+val rdd3 = rdd2.groupByKey
+val rdd4 = rdd3.map(x => (x._1,x._2.size))
+rdd4.collect
+
+
+spark2-shell --conf spark.dynamicAllocation.enabled=false --master yarn --num-executors 20 --executor-cores 2 --executor-memory 2g
+
+spark2-shell  --master yarn --num-executors 20 --executor-cores 2 --executor-memory 2g
+
+
+  val random = new scala.util.Random
+  val start = 1
+  val end = 40
+  val rdd1 = sc.textFile("biglogtxtnewlatest1.txt")
+  val rdd2 = rdd1.map(x => {
+    val num = start + random.nextInt((end + start)+1)
+    (x.split(":")(0)+num,x.split(":")(1))
+  })
+  val rdd3 = rdd2.groupByKey()
+  val rdd4 = rdd3.map(x => (x._1,x._2.size))
+  rdd4.cache
+  val rdd5 = rdd4.map(x => {
+    if (x._1.substring(0,4) == "WARN") ("WARN",x._2) else ("ERROR",x._2)
+  })
+  val rdd6 = rdd5.reduceByKey((x,y) => x+y)
+  rdd6.collect.foreach(println)
+  // to remove the cached data
+  rdd4.unpersist()
+  // for persist
+  rdd4.persist
+
+  // adding storage level
+  import org.apache.spark.storage.StorageLevel
+  rdd4.persist(StorageLevel.DISK_ONLY)
+  rdd1.persist(StorageLevel.MEMORY_AND_DISK)
+  spark2-shell --conf spark.dynamicAllocation.enabled=false --master yarn --num-executors 4 --executor-cores 2 --executor-memory 2g
+
+
+spark2-shell --conf spark.dynamicAllocation.enabled=false --master yarn --num-executors 20 --executor-cores 2 --executor-memory 2g
+
+offheap memory is 819mb and 8gb is java heap
+23/10/24 08:41:26 ERROR SparkContext: Error initializing SparkContext.
+java.lang.IllegalArgumentException: Required executor memory (8192), overhead (819 MB), and PySpark memory (0 MB) is above the max threshold (8192 MB) of this cluster! Please check the values of 'yarn.scheduler.maximum-allocation-mb' and/or 'yarn.nodemanager.resource.memory-mb'.
+
+
